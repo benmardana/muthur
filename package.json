@@ -1,0 +1,18 @@
+{
+  "name": "muthur",
+  "version": "1.0.0",
+  "description": "",
+  "main": "muthur.js",
+  "scripts": {
+    "dev": "nodemon"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/bolt": "^3.4.0",
+    "dotenv": "^10.0.0",
+    "nodemon": "^2.0.9",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.5"
+  }
+}
