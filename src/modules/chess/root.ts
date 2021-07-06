@@ -1,14 +1,4 @@
-import {
-  AllMiddlewareArgs,
-  App,
-  Middleware,
-  SlackEventMiddlewareArgs,
-} from '@slack/bolt';
-import assert from '../assert';
-
-// to move
-type Route = [string | RegExp, Middleware<SlackEventMiddlewareArgs<'message'>>];
-type Message = SlackEventMiddlewareArgs<'message'> & AllMiddlewareArgs;
+import { assert, Message, Route } from '../../utils';
 
 const index = [
   /^chess$/,
@@ -33,12 +23,4 @@ n.b moves should be in <https://en.wikipedia.org/wiki/Algebraic_notation_(chess)
   },
 ] as Route;
 
-const routes: Route[] = [index];
-
-export default {
-  register: (app: App) => {
-    routes.forEach(([pattern, callback]) => {
-      app.message(pattern, callback);
-    });
-  },
-};
+export default index;

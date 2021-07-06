@@ -1,14 +1,14 @@
 {
   "name": "muthur",
+  "author": "muthur",
   "version": "1.0.0",
-  "description": "",
-  "main": "muthur.js",
+  "description": "muthur is listening",
+  "repository": {},
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "start": "node dist/muthur.js",
     "muthur": "nodemon"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "@slack/bolt": "^3.4.0",

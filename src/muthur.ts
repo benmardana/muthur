@@ -1,21 +1,21 @@
 import { App } from '@slack/bolt';
-import Chess from './controllers/chess';
 import 'dotenv/config.js';
 
-// Initializes your app with your bot token and signing secret
+import { chess } from './modules';
+import { register } from './utils';
+
+const port = process.env.PORT ?? '3000';
+
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
-const port = process.env.PORT ?? 3000;
+const registerModule = register(app);
 
-Chess.register(app);
+registerModule(chess);
 
 (async () => {
-  // Start your app
-  // @ts-ignore
-  await app.start(port);
-
+  await app.start(parseInt(port));
   console.log(`muthur is listening on port ${port}`);
 })();
