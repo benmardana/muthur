@@ -1,6 +1,6 @@
 import root from './root';
-import testing from './testing';
+import games from './games';
 
-const routes = [root, testing];
+const routes = [root, games];
 
 export default routes;
