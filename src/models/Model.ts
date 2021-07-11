@@ -1,8 +1,5 @@
-import { Data } from '../store/db';
-
 interface Model {
-  key: keyof Data;
-  uuid: string;
+  id: string;
   [key: string]: any;
 }
 
