@@ -1,8 +1,8 @@
 import { App } from '@slack/bolt';
 import 'dotenv/config.js';
-
-import { chess } from './modules';
 import { register } from './utils';
+
+import commands from './commands';
 
 const port = process.env.PORT ?? '3000';
 
@@ -11,9 +11,7 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
-const registerModule = register(app);
-
-registerModule(chess);
+commands.forEach(register(app));
 
 (async () => {
   await app.start(parseInt(port));

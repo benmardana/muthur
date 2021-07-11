@@ -1,5 +1,6 @@
 import Realm from 'realm';
 
+// move to schema dir
 const Frame = {
   name: 'Frame',
   properties: {
@@ -34,7 +35,7 @@ const Player = {
   primaryKey: 'id',
 };
 
-// probably convert to class singleton
+// probably convert to class?
 const openRealm = async () => {
   let realm: Realm;
   try {

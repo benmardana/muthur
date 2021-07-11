@@ -1,13 +1,11 @@
-import { assert, Message, Route } from '../../utils';
+import { assert, Message } from '../../utils';
 
-const index = [
-  /^chess$/,
-  async ({ message, say }: Message) => {
-    assert('user' in message);
-    await say({
-      unfurl_links: false,
-      unfurl_media: false,
-      text: `
+export default async ({ message, say }: Message) => {
+  assert('user' in message);
+  await say({
+    unfurl_links: false,
+    unfurl_media: false,
+    text: `
 Want to play chess <@${message.user}>?
 
 Challenge someone with \`chess play @opponent\`
@@ -18,9 +16,6 @@ Show an active game with \`chess game @opponent\`
 
 Make a move in an active game with \`chess game @opponent move <move>\`
 n.b moves should be in <https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#Notation_for_moves|Standard Algebraic Notation>
-          `,
-    });
-  },
-] as Route;
-
-export default index;
+        `,
+  });
+};
