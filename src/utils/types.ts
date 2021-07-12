@@ -1,11 +1,17 @@
 import {
+  AllMiddlewareArgs,
   Middleware,
   SlackEventMiddlewareArgs,
-  AllMiddlewareArgs,
 } from '@slack/bolt';
 
-export type Route = [
-  string | RegExp,
-  Middleware<SlackEventMiddlewareArgs<'message'>>
-];
+export type Pattern = string | RegExp;
 export type Message = SlackEventMiddlewareArgs<'message'> & AllMiddlewareArgs;
+export type MessageHandler = Middleware<SlackEventMiddlewareArgs<'message'>>;
+
+export type Route = [
+  Pattern,
+  {
+    handle: MessageHandler;
+    help?: MessageHandler;
+  } & Record<string, MessageHandler>
+];

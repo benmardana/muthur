@@ -1,10 +1,9 @@
 import { App } from '@slack/bolt';
 import 'dotenv/config.js';
 import { register } from './utils';
-
 import commands from './commands';
 
-const port = process.env.PORT ?? '3000';
+const port = parseInt(process.env.PORT ?? '3000');
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -14,6 +13,6 @@ const app = new App({
 commands.forEach(register(app));
 
 (async () => {
-  await app.start(parseInt(port));
+  await app.start(port);
   console.log(`muthur is listening on port ${port}`);
 })();

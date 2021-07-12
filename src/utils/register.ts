@@ -1,9 +1,11 @@
 import { App } from '@slack/bolt';
-import { Route } from 'utils';
+import { Route } from './types';
 
 const register =
   (app: App) =>
-  ([pattern, callback]: Route) =>
-    app.message(pattern, callback);
+  ([pattern, { handle, help }]: Route) => {
+    app.message(pattern, handle);
+    help && app.message(pattern, help);
+  };
 
 export default register;

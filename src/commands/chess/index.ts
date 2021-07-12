@@ -1,2 +1,4 @@
-export { default as root } from './root';
-export { default as games } from './games';
+import { default as chess } from './chess';
+import { default as games } from './games';
+
+export default { chess, games };

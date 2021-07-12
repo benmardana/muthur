@@ -1,10 +1,6 @@
-import CommandBuilder from './CommandBuilder';
+import commands from './commands';
+import Chess from './chess';
 
-import { root, games } from './chess';
-
-const commands = new CommandBuilder()
-  .add([/^chess$/, root])
-  .add([/^chess games(?:$|[\s]+(.*))$/, games])
-  .add([/^chess game(?:$|[\s]+(.*))$/, root]);
-
-export default commands;
+export default commands
+  .add([/^chess$/, Chess.chess])
+  .add([/^chess games(?:$|[\s]+(.*))$/, Chess.games]);
