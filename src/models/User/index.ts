@@ -2,17 +2,21 @@ import openRealm from '../../store/realm';
 
 import Model from '../Model';
 
-interface Player {
+interface User {
   id: string;
   name: string;
 }
 
-class Player extends Model {
+class User extends Model<User> {
+  public static async all<K = User>() {
+    return super.all<K>();
+  }
+
   public async save() {
     const realm = await openRealm();
     realm?.write(() => {
       realm?.create(
-        'Player',
+        'User',
         {
           id: this.name,
           name: this.name,
@@ -21,7 +25,9 @@ class Player extends Model {
       );
     });
     realm?.close();
+
+    return this;
   }
 }
 
-export default Player;
+export default User;
