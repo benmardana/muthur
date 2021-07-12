@@ -1,4 +1,4 @@
-import openRealm from '../../store/realm';
+import { openRealm } from 'store';
 
 import Model from '../Model';
 

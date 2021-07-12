@@ -1,4 +1,4 @@
-import { Route } from '../utils';
+import { Route } from 'utils';
 
 class Commands {
   static #_instance: Commands;

@@ -3,11 +3,18 @@
   "author": "muthur",
   "version": "1.0.0",
   "description": "muthur is listening",
-  "repository": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benmcgarvey/muthur"
+  },
+  "engines": {
+    "node": "14.4.0"
+  },
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "start": "node dist/muthur.js",
-    "muthur": "nodemon"
+    "start": "node -r ./paths.js  dist/muthur.js",
+    "muthur": "nodemon",
+    "realm:wipe": "rm -rf realm*"
   },
   "license": "ISC",
   "dependencies": {
@@ -17,6 +24,7 @@
     "nodemon": "^2.0.9",
     "realm": "^10.6.0",
     "ts-node": "^10.0.0",
+    "tsconfig-paths": "^3.10.1",
     "typescript": "^4.3.5"
   }
 }

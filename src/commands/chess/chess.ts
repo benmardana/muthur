@@ -1,4 +1,4 @@
-import { assert, Message } from '../../utils';
+import { assert, Message } from 'utils';
 
 export default {
   handle: async ({ message, say }: Message) => {

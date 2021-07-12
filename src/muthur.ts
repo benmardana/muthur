@@ -1,7 +1,7 @@
 import { App } from '@slack/bolt';
 import 'dotenv/config.js';
-import { register } from './utils';
-import commands from './commands';
+import { register } from 'utils';
+import commands from 'commands';
 
 const port = parseInt(process.env.PORT ?? '3000');
 

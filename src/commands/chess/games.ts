@@ -1,5 +1,5 @@
-import { openRealm } from '../../store';
-import { assert, Message } from '../../utils';
+import { openRealm } from 'store';
+import { assert, Message } from 'utils';
 
 export default {
   handle: async ({ context, message, say }: Message) => {
