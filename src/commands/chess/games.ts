@@ -4,7 +4,7 @@ import { assert, Message } from 'utils';
 export default {
   handle: async ({ context, message, say }: Message) => {
     assert('user' in message);
-    const command = context.matches[1];
+    const command = context.matches?.[1];
     switch (command) {
       case 'list':
         const realm = await openRealm();

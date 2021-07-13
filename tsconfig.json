@@ -13,7 +13,8 @@
       "commands/*": ["commands/*"],
       "models/*": ["models/*"],
       "store/*": ["store/*"],
-      "utils/*": ["utils/*"]
+      "utils/*": ["utils/*"],
+      "middleware/*": ["middleware/*"]
     },
 
     "strict": true,

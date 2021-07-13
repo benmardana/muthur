@@ -5,7 +5,7 @@ interface Model<T> {
   [key: string]: any;
 }
 
-interface Schema {
+export interface Schema {
   name: string;
   primaryKey: string;
   properties: Record<string, string>;
@@ -24,7 +24,12 @@ class Model<T extends Record<string, any>> {
         throw Error();
       }
       const realm = await openRealm();
-      return realm?.objects<K>(this.Schema.name);
+      const objects = realm?.objects<K>(this.Schema.name);
+      return objects
+        ? objects.map(
+            (object) => new this(Object.fromEntries(object.entries()) as K)
+          )
+        : undefined;
     } catch {
       console.error(`error while querying all ${this.Schema.name}s`);
     }
@@ -36,7 +41,28 @@ class Model<T extends Record<string, any>> {
         throw Error();
       }
       const realm = await openRealm();
-      return realm?.objectForPrimaryKey<K>(this.Schema.name, primaryKey);
+      const object = realm?.objectForPrimaryKey<K>(
+        this.Schema.name,
+        primaryKey
+      );
+      return object
+        ? new this(Object.fromEntries(object.entries()) as K)
+        : undefined;
+    } catch {
+      console.error(
+        `Error while querying ${this.Schema.name}s by primary key ${primaryKey}.`
+      );
+    }
+  }
+
+  public static async findOrCreate<K>(primaryKey: string) {
+    try {
+      if (!this.Schema.name) {
+        throw Error();
+      }
+      const object = await this.find<K>(primaryKey);
+
+      return object ? object : new this<K>({ id: primaryKey } as unknown as K);
     } catch {
       console.error(
         `Error while querying ${this.Schema.name}s by primary key ${primaryKey}.`
@@ -49,7 +75,13 @@ class Model<T extends Record<string, any>> {
       if (!this.Schema.name) {
         throw Error();
       }
-      return (await this.all<K>())?.filtered(predicate);
+      const realm = await openRealm();
+      const objects = realm?.objects<K>(this.Schema.name)?.filtered(predicate);
+      return objects
+        ? objects.map(
+            (object) => new this(Object.fromEntries(object.entries()) as K)
+          )
+        : undefined;
     } catch {
       console.error(
         `Error while querying ${this.Schema.name}s.
@@ -66,7 +98,7 @@ class Model<T extends Record<string, any>> {
     return this;
   }
 
-  public async save(): Promise<this> {
+  public async save(): Promise<Model<T> | undefined> {
     throw Error('Save method on Model not implemented');
   }
 }
