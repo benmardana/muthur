@@ -1,1 +1,1 @@
-export { default as openRealm } from './realm';
+export { default } from './realm';

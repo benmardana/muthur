@@ -8,10 +8,16 @@ const config = {
   schema: [Frame, ChessGame, User],
 };
 
-export default async () => {
-  try {
-    return await openRealm.open(config);
-  } catch (err) {
-    console.error('Failed to open the realm', err.message);
-  }
+const realmRef: { realm?: Realm } = {
+  realm: undefined,
+};
+
+export default {
+  realmRef: realmRef,
+  openRealm: async () => {
+    realmRef.realm = await openRealm.open(config);
+  },
+  closeRealm: async () => {
+    realmRef.realm = realmRef.realm?.close() || undefined;
+  },
 };

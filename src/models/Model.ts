@@ -1,4 +1,4 @@
-import { openRealm } from 'store';
+import RealmConfig from 'store';
 
 interface Model<T> {
   id: string;
@@ -18,13 +18,16 @@ class Model<T extends Record<string, any>> {
     this.set(data);
   }
 
+  get tag() {
+    return `<@${this.id}>`;
+  }
+
   public static async all<K>() {
     try {
       if (!this.Schema.name) {
         throw Error();
       }
-      const realm = await openRealm();
-      const objects = realm?.objects<K>(this.Schema.name);
+      const objects = RealmConfig.realmRef.realm?.objects<K>(this.Schema.name);
       return objects
         ? objects.map(
             (object) => new this(Object.fromEntries(object.entries()) as K)
@@ -40,8 +43,7 @@ class Model<T extends Record<string, any>> {
       if (!this.Schema.name) {
         throw Error();
       }
-      const realm = await openRealm();
-      const object = realm?.objectForPrimaryKey<K>(
+      const object = RealmConfig.realmRef.realm?.objectForPrimaryKey<K>(
         this.Schema.name,
         primaryKey
       );
@@ -75,8 +77,9 @@ class Model<T extends Record<string, any>> {
       if (!this.Schema.name) {
         throw Error();
       }
-      const realm = await openRealm();
-      const objects = realm?.objects<K>(this.Schema.name)?.filtered(predicate);
+      const objects = RealmConfig.realmRef.realm
+        ?.objects<K>(this.Schema.name)
+        ?.filtered(predicate);
       return objects
         ? objects.map(
             (object) => new this(Object.fromEntries(object.entries()) as K)

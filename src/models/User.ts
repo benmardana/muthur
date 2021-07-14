@@ -1,7 +1,7 @@
-import { openRealm } from 'store';
+import RealmConfig from 'store';
 import { User as UserSchema } from 'store/schema';
 
-import Model, { Schema } from '../Model';
+import Model, { Schema } from './Model';
 
 interface User {
   id: string;
@@ -10,10 +10,6 @@ interface User {
 
 class User extends Model<User> {
   static Schema: Schema = UserSchema;
-
-  get tag() {
-    return `<@${this.name}>`;
-  }
 
   public static async all<K = User>() {
     return super.all<K>();
@@ -32,9 +28,8 @@ class User extends Model<User> {
   }
 
   public async save() {
-    const realm = await openRealm();
-    realm?.write(() => {
-      realm?.create(
+    RealmConfig.realmRef.realm?.write(() => {
+      RealmConfig.realmRef.realm?.create(
         'User',
         {
           id: this.id,
@@ -43,9 +38,8 @@ class User extends Model<User> {
         Realm.UpdateMode.Modified
       );
     });
-    realm?.close();
 
-    return User.find(this.id);
+    return await User.find(this.id);
   }
 }
 

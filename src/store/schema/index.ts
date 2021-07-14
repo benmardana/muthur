@@ -3,7 +3,7 @@ export const Frame = {
   properties: {
     id: 'string',
     fen: 'string',
-    player: 'User',
+    playerId: 'string',
     lastMove: 'string',
     timestamp: 'string',
   },
@@ -14,10 +14,10 @@ export const ChessGame = {
   name: 'ChessGame',
   properties: {
     id: 'string',
-    playerOne: 'User',
-    playerTwo: 'User',
+    playerOneId: 'string',
+    playerTwoId: 'string',
     frames: 'Frame[]',
-    nextMoveUser: 'User',
+    nextMoveUserId: 'string',
   },
   primaryKey: 'id',
 };

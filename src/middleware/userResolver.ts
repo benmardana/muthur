@@ -1,19 +1,20 @@
+import RealmConfig from 'store';
 import { AnyMiddlewareArgs, Middleware } from '@slack/bolt';
 import assert from 'assert';
-import User from 'models/User';
+import { User } from 'models';
 
 const userResolver: Middleware<AnyMiddlewareArgs> = async ({
   payload,
   context,
   next,
 }) => {
+  RealmConfig.openRealm();
   assert('user' in payload);
 
   const slackUserId = payload.user;
 
   try {
-    const user = await User.findOrCreate(slackUserId);
-    context.user = await user?.save();
+    context.user = await (await User.findOrCreate(`<@${slackUserId}>`))?.save();
   } catch (error) {
     throw error;
   }

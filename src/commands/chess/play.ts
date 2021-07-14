@@ -1,10 +1,13 @@
-import { assert, Message } from 'utils';
+import RealmConfig from 'store';
+import ChessGame from 'models/ChessGame';
+import User from 'models/User';
+import { Message } from 'utils';
 
 const tagRegex = /(<@.*>)/;
 
 export default {
-  handlex: async ({ context, message, say }: Message) => {
-    assert('user' in message);
+  handle: async ({ context, say }: Message) => {
+    await RealmConfig.openRealm();
     const arg = context.matches?.[1];
 
     if (!arg) {
@@ -23,9 +26,23 @@ export default {
       return;
     }
 
-    await say(taggedOpponent);
-  },
-  handle: async ({ context, say }: Message) => {
-    await say(context.user?.tag!);
+    const opponent = await (await User.findOrCreate(taggedOpponent))?.save();
+
+    const game = await ChessGame.findOrCreate(
+      `${context?.user?.id}&${opponent?.id}`
+    );
+
+    // @ts-ignore
+    game?.set({
+      id: `${context?.user?.id}&${opponent?.id}`,
+      playerOneId: context?.user?.id!,
+      playerTwoId: opponent?.id!,
+      nextMoveUserId: context?.user?.id!,
+    });
+
+    game?.save();
+
+    await say(JSON.stringify(game));
+    RealmConfig.closeRealm();
   },
 };
