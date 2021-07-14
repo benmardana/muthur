@@ -1,0 +1,13 @@
+version: '3.2'
+
+services:
+  muthur:
+    image: muthur
+    build:
+      context: .
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./realm:/muthur/realm
+      - ./src:/muthur/src:cached
+      - /node_modules

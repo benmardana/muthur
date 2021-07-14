@@ -8,7 +8,7 @@
     "url": "https://github.com/benmcgarvey/muthur"
   },
   "engines": {
-    "node": "14.4.0"
+    "node": "14.17.3"
   },
   "scripts": {
     "build": "rm -rf dist && tsc",

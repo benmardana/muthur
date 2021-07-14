@@ -1,16 +1,10 @@
-import { join } from 'path';
 import openRealm from 'realm';
 import { Frame, ChessGame, User } from './schema';
 
-const homeDir = process.env.NODE_ENV === 'production' ? process.env.HOME : '';
-const realmPath = 'realm';
-
-if (homeDir === undefined) {
-  throw Error('$HOME not set');
-}
+const realmPath = 'realm/realm';
 
 const config = {
-  path: join(homeDir, realmPath),
+  path: realmPath,
   schema: [Frame, ChessGame, User],
 };
 
