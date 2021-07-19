@@ -28,19 +28,17 @@ export default {
 
     const opponent = await (await User.findOrCreate(taggedOpponent))?.save();
 
-    const game = await ChessGame.findOrCreate(
-      `${context?.user?.id}&${opponent?.id}`
-    );
+    const id = `${context?.user?.id}&${opponent?.id}`;
 
-    // @ts-ignore
+    const game = await ChessGame.findOrCreate(id);
+
     game?.set({
-      id: `${context?.user?.id}&${opponent?.id}`,
+      id,
       playerOneId: context?.user?.id!,
       playerTwoId: opponent?.id!,
       nextMoveUserId: context?.user?.id!,
     });
-
-    game?.save();
+    await game?.save();
 
     await say(JSON.stringify(game));
     RealmConfig.closeRealm();

@@ -93,7 +93,7 @@ class Model<T extends Record<string, any>> {
     }
   }
 
-  public set(data: T) {
+  public set(data: Partial<T>) {
     Object.entries(data).forEach(([k, v]) => {
       this[k] = v;
     });
