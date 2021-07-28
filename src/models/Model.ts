@@ -1,108 +1,72 @@
-import RealmConfig from 'store';
+import { config } from 'store/realm';
+import { PropertyInterface } from 'store/schema';
+import assert from 'utils/assert';
 
-interface Model<T> {
-  id: string;
-  [key: string]: any;
+interface Model<K extends PropertyInterface> {
+  Schema?: {
+    name?: string;
+    primaryKey?: string;
+    properties?: PropertyInterface;
+    model?: K & Realm.Object;
+    models?: Realm.Results<K & Realm.Object>;
+  };
 }
 
-export interface Schema {
-  name: string;
-  primaryKey: string;
-  properties: Record<string, string>;
-}
+class Model<K extends PropertyInterface> {
+  #realmInstance?: Realm;
 
-class Model<T extends Record<string, any>> {
-  static Schema: Schema;
-
-  constructor(data: T) {
-    this.set(data);
+  constructor() {
+    this.#realmInstance = new Realm(config);
   }
 
-  get tag() {
-    return `<@${this.id}>`;
-  }
-
-  public static async all<K>() {
-    try {
-      if (!this.Schema.name) {
-        throw Error();
-      }
-      const objects = RealmConfig.realmRef.realm?.objects<K>(this.Schema.name);
-      return objects
-        ? objects.map(
-            (object) => new this(Object.fromEntries(object.entries()) as K)
-          )
-        : undefined;
-    } catch {
-      console.error(`error while querying all ${this.Schema.name}s`);
+  public all() {
+    if (!this.Schema?.name) {
+      throw Error();
     }
+
+    this.Schema.models = this.#realmInstance?.objects<K>(this.Schema?.name);
+    return this.Schema?.models;
   }
 
-  public static async find<K>(primaryKey: string) {
-    try {
-      if (!this.Schema.name) {
-        throw Error();
-      }
-      const object = RealmConfig.realmRef.realm?.objectForPrimaryKey<K>(
+  public find(primaryKey: string) {
+    if (!this.Schema?.name) {
+      throw Error();
+    }
+
+    this.Schema.model = this.#realmInstance?.objectForPrimaryKey<K>(
+      this.Schema?.name,
+      primaryKey
+    );
+    return this.Schema?.model;
+  }
+
+  public findOrCreate(primaryKey: string) {
+    if (!this.Schema?.name) {
+      throw Error();
+    }
+
+    this.#realmInstance?.write(() => {
+      assert(this.Schema?.name);
+
+      // @ts-ignore
+      this.Schema.model = this.#realmInstance.create<K>(
         this.Schema.name,
-        primaryKey
+        {
+          id: primaryKey,
+        },
+        Realm.UpdateMode.Modified
       );
-      return object
-        ? new this(Object.fromEntries(object.entries()) as K)
-        : undefined;
-    } catch {
-      console.error(
-        `Error while querying ${this.Schema.name}s by primary key ${primaryKey}.`
-      );
-    }
-  }
-
-  public static async findOrCreate<K>(primaryKey: string) {
-    try {
-      if (!this.Schema.name) {
-        throw Error();
-      }
-      const object = await this.find<K>(primaryKey);
-
-      return object ? object : new this<K>({ id: primaryKey } as unknown as K);
-    } catch {
-      console.error(
-        `Error while querying ${this.Schema.name}s by primary key ${primaryKey}.`
-      );
-    }
-  }
-
-  public static async findWhere<K>(predicate: string) {
-    try {
-      if (!this.Schema.name) {
-        throw Error();
-      }
-      const objects = RealmConfig.realmRef.realm
-        ?.objects<K>(this.Schema.name)
-        ?.filtered(predicate);
-      return objects
-        ? objects.map(
-            (object) => new this(Object.fromEntries(object.entries()) as K)
-          )
-        : undefined;
-    } catch {
-      console.error(
-        `Error while querying ${this.Schema.name}s.
-         Query: ${predicate}`
-      );
-    }
-  }
-
-  public set(data: Partial<T>) {
-    Object.entries(data).forEach(([k, v]) => {
-      this[k] = v;
     });
-
-    return this;
+    return this.Schema.model;
   }
 
-  public async save(): Promise<Model<T> | undefined> {
-    throw Error('Save method on Model not implemented');
+  public findWhere(predicate: string) {
+    if (!this.Schema?.name) {
+      throw Error();
+    }
+
+    this.Schema.models = this.all()?.filtered(predicate);
+    return this.Schema.models;
   }
 }
 

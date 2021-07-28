@@ -3,7 +3,7 @@ import { Frame, ChessGame, User } from './schema';
 
 const realmPath = 'realm/realm';
 
-const config = {
+export const config = {
   path: realmPath,
   schema: [Frame, ChessGame, User],
 };
