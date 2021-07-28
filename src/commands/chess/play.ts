@@ -1,46 +1,55 @@
 import RealmConfig from 'store';
 import ChessGame from 'models/ChessGame';
 import User from 'models/User';
-import { Message } from 'utils';
+import { assert, Message } from 'utils';
+import { SayFn } from '@slack/bolt';
 
 const tagRegex = /(<@.*>)/;
 
+const resolveOpponent = async (say: SayFn, argument?: string) => {
+  if (!argument) {
+    await say(
+      `Couldn't find opponent. Try tagging the person you want to challenge.`
+    );
+    return;
+  }
+
+  const taggedOpponent = tagRegex.exec(argument)?.[1];
+
+  if (!taggedOpponent) {
+    await say(
+      `Couldn't find ${argument}. Try tagging the person you want to challenge.`
+    );
+    return;
+  }
+
+  return new User(taggedOpponent);
+};
+
+const realmTransaction = async (transaction: (...args: any[]) => void) => {
+  await RealmConfig.openRealm();
+  RealmConfig.realmRef.realm?.write(() => {
+    transaction();
+  });
+  RealmConfig.closeRealm();
+};
+
 export default {
   handle: async ({ context, say }: Message) => {
-    await RealmConfig.openRealm();
     const arg = context.matches?.[1];
 
-    if (!arg) {
-      await say(
-        `Couldn't find opponent. Try tagging the person you want to challenge.`
-      );
-      return;
-    }
+    const opponent = await resolveOpponent(say, arg);
 
-    const taggedOpponent = tagRegex.exec(arg)?.[1];
+    const playerOneId = context?.user?.Schema?.model?.id;
+    const playerTwoId = opponent?.Schema?.model?.id;
+    const game = new ChessGame(`${playerOneId}&${playerTwoId}`);
 
-    if (!taggedOpponent) {
-      await say(
-        `Couldn't find ${arg}. Try tagging the person you want to challenge.`
-      );
-      return;
-    }
-
-    const opponent = await (await User.findOrCreate(taggedOpponent))?.save();
-
-    const id = `${context?.user?.id}&${opponent?.id}`;
-
-    const game = await ChessGame.findOrCreate(id);
-
-    game?.set({
-      id,
-      playerOneId: context?.user?.id!,
-      playerTwoId: opponent?.id!,
-      nextMoveUserId: context?.user?.id!,
+    await realmTransaction(() => {
+      assert(game.Schema?.model);
+      game.Schema.model.nextMoveUserId = playerOneId!;
+      game.Schema.model.playerOneId = playerOneId!;
+      game.Schema.model.playerTwoId = playerTwoId!;
+      say(JSON.stringify(game.Schema?.model));
     });
-    await game?.save();
-
-    await say(JSON.stringify(game));
-    RealmConfig.closeRealm();
   },
 };

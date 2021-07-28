@@ -20,6 +20,12 @@ export default {
           .join('\n');
         say(prettyString);
         break;
+      case 'clearAll':
+        RealmConfig.realmRef.realm?.write(() => {
+          RealmConfig.realmRef.realm?.deleteAll();
+        });
+        say('All records cleared');
+        break;
       default:
         say('no command provided');
         break;

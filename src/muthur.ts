@@ -13,6 +13,7 @@ const app = new App({
 });
 
 app.use(userResolver);
+
 commands.forEach(register(app));
 
 (async () => {
