@@ -1,6 +1,6 @@
 import { AnyMiddlewareArgs, Middleware } from '@slack/bolt';
 import assert from 'assert';
-import { User } from 'models';
+import userService from 'store/services/userService';
 
 const userResolver: Middleware<AnyMiddlewareArgs> = async ({
   payload,
@@ -9,7 +9,7 @@ const userResolver: Middleware<AnyMiddlewareArgs> = async ({
 }) => {
   assert('user' in payload);
 
-  context.user = new User(`<@${payload.user}>`);
+  context.user = userService.findOrCreate(`<@${payload.user}>`);
 
   await next?.();
 };

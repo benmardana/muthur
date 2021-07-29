@@ -1,55 +1,68 @@
-import RealmConfig from 'store';
-import ChessGame from 'models/ChessGame';
-import User from 'models/User';
 import { assert, Message } from 'utils';
-import { SayFn } from '@slack/bolt';
+import userService from 'store/services/userService';
+import chessGameService, { fenToGif } from 'store/services/chessGameService';
+import { Chess } from 'chess.js';
 
 const tagRegex = /(<@.*>)/;
 
-const resolveOpponent = async (say: SayFn, argument?: string) => {
+const resolveOpponent = (argument?: string) => {
   if (!argument) {
-    await say(
-      `Couldn't find opponent. Try tagging the person you want to challenge.`
+    throw new Error(
+      "Couldn't find opponent. Try tagging the person you want to challenge."
     );
-    return;
   }
 
   const taggedOpponent = tagRegex.exec(argument)?.[1];
 
   if (!taggedOpponent) {
-    await say(
+    throw new Error(
       `Couldn't find ${argument}. Try tagging the person you want to challenge.`
     );
-    return;
   }
 
-  return new User(taggedOpponent);
-};
-
-const realmTransaction = async (transaction: (...args: any[]) => void) => {
-  await RealmConfig.openRealm();
-  RealmConfig.realmRef.realm?.write(() => {
-    transaction();
-  });
-  RealmConfig.closeRealm();
+  return userService.findOrCreate(taggedOpponent);
 };
 
 export default {
   handle: async ({ context, say }: Message) => {
     const arg = context.matches?.[1];
 
-    const opponent = await resolveOpponent(say, arg);
+    try {
+      assert(context.user);
 
-    const playerOneId = context?.user?.Schema?.model?.id;
-    const playerTwoId = opponent?.Schema?.model?.id;
-    const game = new ChessGame(`${playerOneId}&${playerTwoId}`);
+      const opponent = resolveOpponent(arg);
 
-    await realmTransaction(() => {
-      assert(game.Schema?.model);
-      game.Schema.model.nextMoveUserId = playerOneId!;
-      game.Schema.model.playerOneId = playerOneId!;
-      game.Schema.model.playerTwoId = playerTwoId!;
-      say(JSON.stringify(game.Schema?.model));
-    });
+      const playerOneId = context.user.id;
+      const playerTwoId = opponent.id;
+      const primaryKey = `${playerOneId}&${playerTwoId}`;
+
+      const existingGame = chessGameService.find(primaryKey);
+      if (existingGame) {
+        say(
+          `Game already exists - ${
+            existingGame.game.turn() === 'b'
+              ? existingGame.black
+              : existingGame.white
+          } it's your turn!`
+        );
+        say(fenToGif(existingGame.game.fen()));
+        return;
+      }
+
+      const newGame = chessGameService.create(primaryKey, {
+        white: playerOneId,
+        black: playerTwoId,
+      })!;
+
+      say(
+        `New game created - ${
+          newGame.game.turn() === 'b' ? newGame.black : newGame.white
+        } it's your turn!`
+      );
+      say(fenToGif(newGame.game.fen()));
+    } catch (e) {
+      say(e.message);
+      return;
+    }
   },
 };

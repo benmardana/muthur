@@ -1,23 +1,13 @@
-import openRealm from 'realm';
-import { Frame, ChessGame, User } from './schema';
+import Realm from 'realm';
+import { ChessGame, User } from './schema';
 
 const realmPath = 'realm/realm';
 
 export const config = {
   path: realmPath,
-  schema: [Frame, ChessGame, User],
+  schema: [ChessGame, User],
 };
 
-const realmRef: { realm?: Realm } = {
-  realm: undefined,
-};
+const realmInstance = new Realm(config);
 
-export default {
-  realmRef: realmRef,
-  openRealm: async () => {
-    realmRef.realm = await openRealm.open(config);
-  },
-  closeRealm: async () => {
-    realmRef.realm = realmRef.realm?.close() || undefined;
-  },
-};
+export default realmInstance;
