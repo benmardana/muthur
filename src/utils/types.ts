@@ -4,13 +4,12 @@ import {
   Middleware,
   SlackEventMiddlewareArgs,
 } from '@slack/bolt';
-import { User } from 'models';
-import Model from 'models/Model';
+import { User } from 'store/services/userService';
 
 export type Pattern = string | RegExp;
 export type Message = SlackEventMiddlewareArgs<'message'> &
   AllMiddlewareArgs & {
-    context: Context & { matches?: string[]; user?: Model<User> };
+    context: Context & { matches?: string[]; user?: User & Realm.Object };
   };
 export type MessageHandler = Middleware<SlackEventMiddlewareArgs<'message'>>;
 
