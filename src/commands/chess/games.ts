@@ -1,22 +1,18 @@
-import realmInstance from 'store';
-import { assert, Message } from 'utils';
+import chessGameService, { nextTurn } from 'store/services/chessGameService';
+import { Message } from 'utils';
 
 export default {
-  handle: async ({ context, message, say }: Message) => {
-    assert('user' in message);
-    const command = context.matches?.[1];
-    switch (command) {
-      case 'list':
-        say(
-          JSON.stringify(realmInstance.objects('ChessGame')) ?? 'no games found'
-        );
-        break;
-      case 'list mine':
-        say('list mine');
-        break;
-      default:
-        say('missing command');
-        break;
-    }
+  handle: async ({ say }: Message) => {
+    const activeGames = chessGameService
+      .all()
+      .filter((game) => !game.game.game_over())
+      .map((game) => `${game.id} - ${nextTurn(game)} to move`);
+
+    await say(
+      activeGames.length > 0
+        ? `Active games:
+${activeGames.join('\n')}`
+        : "no games found :'("
+    );
   },
 };

@@ -1,7 +1,11 @@
 import { assert, Message } from 'utils';
 import userService from 'store/services/userService';
-import chessGameService, { fenToGif } from 'store/services/chessGameService';
-import { Chess } from 'chess.js';
+import chessGameService, {
+  ChessGame,
+  fenToGif,
+  nextTurn,
+  opposition,
+} from 'store/services/chessGameService';
 
 const tagRegex = /(<@.*>)/;
 
@@ -30,35 +34,32 @@ export default {
     try {
       assert(context.user);
 
-      const opponent = resolveOpponent(arg);
+      const existingGame: ChessGame | undefined = chessGameService.findWhere(
+        `id CONTAINS "${context.user.id}"`
+      )[0];
 
-      const playerOneId = context.user.id;
-      const playerTwoId = opponent.id;
-      const primaryKey = `${playerOneId}&${playerTwoId}`;
-
-      const existingGame = chessGameService.find(primaryKey);
       if (existingGame) {
         say(
-          `Game already exists - ${
-            existingGame.game.turn() === 'b'
-              ? existingGame.black
-              : existingGame.white
-          } it's your turn!`
+          `You already have a game with ${opposition(
+            context.user.id,
+            existingGame
+          )} - ${nextTurn(existingGame)} it's your turn!`
         );
         say(fenToGif(existingGame.game.fen()));
         return;
       }
+
+      const opponent = resolveOpponent(arg);
+      const playerOneId = context.user.id;
+      const playerTwoId = opponent.id;
+      const primaryKey = `${playerOneId} vs ${playerTwoId}`;
 
       const newGame = chessGameService.create(primaryKey, {
         white: playerOneId,
         black: playerTwoId,
       })!;
 
-      say(
-        `New game created - ${
-          newGame.game.turn() === 'b' ? newGame.black : newGame.white
-        } it's your turn!`
-      );
+      say(`New game created - ${nextTurn(newGame)} it's your turn!`);
       say(fenToGif(newGame.game.fen()));
     } catch (e) {
       say(e.message);

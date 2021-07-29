@@ -33,6 +33,12 @@ export const fenToGif = (fen: string) =>
     fen.indexOf(' ')
   )}#${shortUUID.generate()}`;
 
+export const nextTurn = (game: ChessGame) =>
+  game.game.turn() === 'b' ? game.black : game.white;
+
+export const opposition = (currentUser: string, game: ChessGame) =>
+  game.white === currentUser ? game.black : game.white;
+
 const find = (id: string) => {
   const instance = realmInstance.objectForPrimaryKey<DBChessGame>(
     'ChessGame',
@@ -65,8 +71,21 @@ const create = (
 const findOrCreate = (id: string, data: { white: string; black: string }) =>
   find(id) ?? create(id, data)!;
 
+const all = () =>
+  realmInstance
+    .objects<DBChessGame>('ChessGame')
+    .map(transformDBInstanceToAppInstance);
+
+const findWhere = (predicate: string) =>
+  realmInstance
+    .objects<DBChessGame>('ChessGame')
+    .filtered(predicate)
+    .map(transformDBInstanceToAppInstance);
+
 export default {
   find,
   create,
   findOrCreate,
+  all,
+  findWhere,
 };
