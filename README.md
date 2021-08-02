@@ -14,6 +14,7 @@ Muthur is a slack bot made the following stack
 - `npm`
 - [`ngrok`](https://ngrok.com/)
 - [`flyctl`](https://fly.io/docs/flyctl/installing/)
+- also depends on [lila-gif](https://github.com/benmcgarvey/lila-gif) being live at https://lila-gif.fly.dev/ for the generated chess board gifs
 
 ## Installation
 
