@@ -8,7 +8,7 @@ export default {
 
     switch (command) {
       case 'echo':
-        say('echo');
+        await say('echo');
         break;
       case 'dump':
         const prettyString = Object.values(schema)
@@ -20,16 +20,16 @@ export default {
                 .join('\n\t')}`
           )
           .join('\n');
-        say(prettyString);
+        await say(prettyString);
         break;
       case 'clearAll':
         realmInstance.write(() => {
           realmInstance.deleteAll();
         });
-        say('All records cleared');
+        await say('All records cleared');
         break;
       default:
-        say('no command provided');
+        await say('no command provided');
         break;
     }
   },

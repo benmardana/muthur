@@ -39,30 +39,30 @@ export default {
       )[0];
 
       if (existingGame) {
-        say(
+        await say(
           `You already have a game with ${opposition(
             context.user.id,
             existingGame
           )} - ${nextTurn(existingGame)} it's your turn!`
         );
-        say(fenToGif(existingGame.game.fen()));
+        await say(fenToGif(existingGame.game.fen()));
         return;
       }
 
       const opponent = resolveOpponent(arg);
-      const playerOneId = context.user.id;
-      const playerTwoId = opponent.id;
-      const primaryKey = `${playerOneId} vs ${playerTwoId}`;
 
-      const newGame = chessGameService.create(primaryKey, {
-        white: playerOneId,
-        black: playerTwoId,
-      })!;
+      const newGame = chessGameService.create(
+        `${context.user.id} vs ${opponent.id}`,
+        {
+          white: context.user.id,
+          black: opponent.id,
+        }
+      )!;
 
-      say(`New game created - ${nextTurn(newGame)} it's your turn!`);
-      say(fenToGif(newGame.game.fen()));
+      await say(`New game created - ${nextTurn(newGame)} it's your turn!`);
+      await say(fenToGif(newGame.game.fen()));
     } catch (e) {
-      say(e.message);
+      await say(e.message);
       return;
     }
   },

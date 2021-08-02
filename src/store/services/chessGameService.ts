@@ -1,6 +1,7 @@
-import { Chess, ChessInstance } from 'chess.js';
+import { Chess, ChessInstance, Move } from 'chess.js';
 import shortUUID from 'short-uuid';
 import realmInstance from 'store/realm';
+import querystring from 'querystring';
 
 const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -27,11 +28,24 @@ const transformDBInstanceToAppInstance: (
   white,
 });
 
-export const fenToGif = (fen: string) =>
-  `https://lila-gif.fly.dev/image.gif?fen=${fen.substring(
-    0,
-    fen.indexOf(' ')
+export const sanToLan = ({ from, to }: Move) => `${from}${to}`;
+
+export const fenToGif = (
+  fen: string,
+  options?: { flipBoard?: boolean; lastMove?: string }
+) => {
+  const [fenBoardState] = fen.split(' ');
+
+  const queryParams = {
+    fen: fenBoardState,
+    orientation: options?.flipBoard ? 'black' : 'white',
+    lastmove: options?.lastMove ? `&lastMove=${options.lastMove}` : '',
+  };
+
+  return `https://lila-gif.fly.dev/image.gif?${querystring.stringify(
+    queryParams
   )}#${shortUUID.generate()}`;
+};
 
 export const nextTurn = (game: ChessGame) =>
   game.game.turn() === 'b' ? game.black : game.white;
@@ -68,6 +82,28 @@ const create = (
     : undefined;
 };
 
+const update = (
+  id: string,
+  data?: { white?: string; black?: string; gameFen?: string }
+) => {
+  let newInstance: (DBChessGame & Realm.Object) | undefined;
+
+  realmInstance.write(() => {
+    realmInstance.create<DBChessGame>(
+      'ChessGame',
+      {
+        id,
+        ...data,
+      },
+      Realm.UpdateMode.Modified
+    );
+  });
+
+  return newInstance
+    ? transformDBInstanceToAppInstance(newInstance)
+    : undefined;
+};
+
 const findOrCreate = (id: string, data: { white: string; black: string }) =>
   find(id) ?? create(id, data)!;
 
@@ -85,6 +121,7 @@ const findWhere = (predicate: string) =>
 export default {
   find,
   create,
+  update,
   findOrCreate,
   all,
   findWhere,

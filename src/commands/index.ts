@@ -6,4 +6,6 @@ export default commands
   .add([/^dev(?:$|[\s]+(.*))$/, dev])
   .add([/^chess$/, Chess.chess])
   .add([/^chess play(?:$|[\s]+(.*))$/, Chess.play])
-  .add([/^chess games(?:$|[\s]+(.*))$/, Chess.games]);
+  .add([/^chess move(?:$|[\s]+(.*))$/, Chess.move])
+  .add([/^chess moves$/, Chess.moves])
+  .add([/^chess games$/, Chess.games]);
