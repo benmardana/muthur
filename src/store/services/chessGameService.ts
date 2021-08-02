@@ -32,18 +32,22 @@ export const sanToLan = ({ from, to }: Move) => `${from}${to}`;
 
 export const fenToGif = (
   fen: string,
-  options?: { flipBoard?: boolean; lastMove?: string }
+  options?: { flipBoard?: boolean; lastMove?: string; check?: string }
 ) => {
   const [fenBoardState] = fen.split(' ');
 
   const queryParams = {
     fen: fenBoardState,
-    orientation: options?.flipBoard ? 'black' : 'white',
-    lastmove: options?.lastMove ? `&lastMove=${options.lastMove}` : '',
+    ...(options?.flipBoard ? { orientation: 'black' } : undefined),
+    ...(options?.lastMove ? { lastmove: options.lastMove } : undefined),
+    ...(options?.check ? { check: options.check } : undefined),
   };
 
   return `https://lila-gif.fly.dev/image.gif?${querystring.stringify(
-    queryParams
+    queryParams,
+    undefined,
+    undefined,
+    { encodeURIComponent: (string: string) => string }
   )}#${shortUUID.generate()}`;
 };
 
@@ -52,6 +56,23 @@ export const nextTurn = (game: ChessGame) =>
 
 export const opposition = (currentUser: string, game: ChessGame) =>
   game.white === currentUser ? game.black : game.white;
+
+const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+export const squareInCheck = (game: ChessInstance) => {
+  const gameBoard = game.board();
+  console.log(gameBoard);
+
+  for (let rank = 0; rank < gameBoard.length; rank++) {
+    for (let file = 0; file < gameBoard[rank].length; file++) {
+      console.log(rank, file, gameBoard[rank][file], game.turn());
+      const square = gameBoard[rank][file];
+      if (square && square.type === game.KING && square.color === game.turn()) {
+        console.log(`${files[file]}${8 - rank}`);
+        return `${files[file]}${8 - rank}`;
+      }
+    }
+  }
+};
 
 const find = (id: string) => {
   const instance = realmInstance.objectForPrimaryKey<DBChessGame>(

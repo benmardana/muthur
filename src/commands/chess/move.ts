@@ -3,6 +3,7 @@ import chessGameService, {
   fenToGif,
   nextTurn,
   sanToLan,
+  squareInCheck,
 } from 'store/services/chessGameService';
 import { assert, Message } from 'utils';
 
@@ -33,15 +34,45 @@ export default {
       const result = game.move(move, { sloppy: true });
 
       if (result) {
+        let check: string | undefined;
+
+        // checkmate
+        if (game.in_checkmate()) {
+          // you win!
+          check = squareInCheck(game);
+          chessGameService.update(existingGame.id, { gameFen: game.fen() });
+          await say('You win!');
+          await say(
+            fenToGif(game.fen(), { lastMove: sanToLan(result), check })
+          );
+          return;
+        }
+
+        // stalemate
+        // draw
+        // threefold repetition
+        // insufficient material
+        if (game.game_over()) {
+          // draw
+          chessGameService.update(existingGame.id, { gameFen: game.fen() });
+          await say('Draw!');
+          await say(fenToGif(game.fen(), { lastMove: sanToLan(result) }));
+          return;
+        }
+
+        if (game.in_check()) {
+          // check
+          check = squareInCheck(game);
+          chessGameService.update(existingGame.id, { gameFen: game.fen() });
+          await say('Check!');
+          await say(
+            fenToGif(game.fen(), { lastMove: sanToLan(result), check })
+          );
+          return;
+        }
+
         chessGameService.update(existingGame.id, { gameFen: game.fen() });
-
-        // Check for check
-        // Check for win
-        // Check for draw
-        // Check for stalemate
-
-        await say('Successful move!');
-        await say(fenToGif(game.fen(), { lastMove: sanToLan(result) }));
+        await say(fenToGif(game.fen(), { lastMove: sanToLan(result), check }));
         return;
       }
 
