@@ -8,6 +8,6 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./realm:/muthur/realm
-      - ./src:/muthur/src:cached
-      - /node_modules
+      - type: volume
+        source: /muthur/realm
+        target: /muthur/realm
