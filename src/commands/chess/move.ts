@@ -2,6 +2,7 @@ import chessGameService, {
   ChessGame,
   fenToGif,
   nextTurn,
+  opposition,
   sanToLan,
   squareInCheck,
 } from 'store/services/chessGameService';
@@ -31,7 +32,7 @@ export default {
         return;
       }
 
-      const result = game.move(move, { sloppy: true });
+      const result = game.move(move);
 
       if (result) {
         let check: string | undefined;
@@ -43,7 +44,11 @@ export default {
           chessGameService.update(existingGame.id, { gameFen: game.fen() });
           await say('You win!');
           await say(
-            fenToGif(game.fen(), { lastMove: sanToLan(result), check })
+            fenToGif(game.fen(), {
+              lastMove: sanToLan(result),
+              flipBoard: game.turn() === 'b',
+              check,
+            })
           );
           return;
         }
@@ -56,7 +61,12 @@ export default {
           // draw
           chessGameService.update(existingGame.id, { gameFen: game.fen() });
           await say('Draw!');
-          await say(fenToGif(game.fen(), { lastMove: sanToLan(result) }));
+          await say(
+            fenToGif(game.fen(), {
+              lastMove: sanToLan(result),
+              flipBoard: game.turn() === 'b',
+            })
+          );
           return;
         }
 
@@ -64,15 +74,26 @@ export default {
           // check
           check = squareInCheck(game);
           chessGameService.update(existingGame.id, { gameFen: game.fen() });
-          await say('Check!');
+          await say(`Check - ${nextTurn(existingGame)} it's your turn!`);
           await say(
-            fenToGif(game.fen(), { lastMove: sanToLan(result), check })
+            fenToGif(game.fen(), {
+              lastMove: sanToLan(result),
+              flipBoard: game.turn() === 'b',
+              check,
+            })
           );
           return;
         }
 
         chessGameService.update(existingGame.id, { gameFen: game.fen() });
-        await say(fenToGif(game.fen(), { lastMove: sanToLan(result), check }));
+        await say(`${nextTurn(existingGame)} your turn!`);
+        await say(
+          fenToGif(game.fen(), {
+            lastMove: sanToLan(result),
+            flipBoard: game.turn() === 'b',
+            check,
+          })
+        );
         return;
       }
 

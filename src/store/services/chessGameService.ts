@@ -39,7 +39,7 @@ export const fenToGif = (
   const queryParams = {
     fen: fenBoardState,
     ...(options?.flipBoard ? { orientation: 'black' } : undefined),
-    ...(options?.lastMove ? { lastmove: options.lastMove } : undefined),
+    ...(options?.lastMove ? { lastMove: options.lastMove } : undefined),
     ...(options?.check ? { check: options.check } : undefined),
   };
 

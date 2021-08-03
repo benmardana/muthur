@@ -26,7 +26,13 @@ export default {
         return;
       }
 
-      await say(`Available moves: ${game.moves().join(', ')}`);
+      // strip check indicators
+      await say(
+        `Available moves: ${game
+          .moves()
+          .map((move) => move.replace(/[+#]/, ''))
+          .join(', ')}`
+      );
     } catch (e) {
       await say(e.message);
       return;
