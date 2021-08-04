@@ -9,7 +9,7 @@ import chessGameService, {
 
 const tagRegex = /(<@.*>)/;
 
-const resolveOpponent = (argument?: string) => {
+export const resolveOpponent = (argument?: string) => {
   if (!argument) {
     throw new Error(
       "Couldn't find opponent. Try tagging the person you want to challenge."
@@ -33,9 +33,10 @@ export default {
 
     try {
       assert(context.user);
+      const opponent = resolveOpponent(arg);
 
       const existingGame: ChessGame | undefined = chessGameService.findWhere(
-        `id CONTAINS "${context.user.id}"`
+        `id CONTAINS "${context.user.id} vs ${opponent.id}"`
       )[0];
 
       if (existingGame) {
@@ -48,8 +49,6 @@ export default {
         await say(fenToGif(existingGame.game.fen()));
         return;
       }
-
-      const opponent = resolveOpponent(arg);
 
       const newGame = chessGameService.create(
         `${context.user.id} vs ${opponent.id}`,

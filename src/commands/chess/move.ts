@@ -2,20 +2,22 @@ import chessGameService, {
   ChessGame,
   fenToGif,
   nextTurn,
-  opposition,
   sanToLan,
   squareInCheck,
 } from 'store/services/chessGameService';
 import { assert, Message } from 'utils';
+import { resolveOpponent } from './play';
 
 export default {
   handle: async ({ say, context }: Message) => {
-    const move = context.matches?.[1] || 'NULL';
-
     try {
+      const move = context.matches?.[2] || 'NULL';
+      const opponent = resolveOpponent(context.matches?.[1] || 'NULL');
+
       assert(context.user);
+
       const existingGame: ChessGame | undefined = chessGameService.findWhere(
-        `id CONTAINS "${context.user.id}"`
+        `id CONTAINS "${context.user.id} vs ${opponent.id}"`
       )[0];
 
       if (!existingGame) {
