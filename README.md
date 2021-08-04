@@ -1,6 +1,11 @@
-# Muthur
+# MU/TH/UR
 
-Muthur is a slack bot made the following stack
+```
+Priority one
+Insure return of organism for analysis.
+All other considerations secondary.
+Crew expendable.
+```
 
 - language: [typescript](https://www.typescriptlang.org)
 - runtime: [node.js](https://nodejs.org)
