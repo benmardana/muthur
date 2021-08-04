@@ -14,7 +14,7 @@
     "build": "rm -rf dist && tsc",
     "start": "node -r ./paths.js  dist/muthur.js",
     "muthur": "nodemon",
-    "realm:wipe": "rm -rf realm*"
+    "realm": "test -f dist/store/repl.js && node dist/store/repl.js || echo 'REPL config not found'"
   },
   "license": "ISC",
   "dependencies": {
