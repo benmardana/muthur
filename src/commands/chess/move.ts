@@ -17,7 +17,7 @@ export default {
       assert(context.user);
 
       const existingGame: ChessGame | undefined = chessGameService.findWhere(
-        `id CONTAINS "${context.user.id} vs ${opponent.id}"`
+        `id CONTAINS "${context.user.id} vs ${opponent.id}" || id CONTAINS "${opponent.id} vs ${context.user.id}"`
       )[0];
 
       if (!existingGame) {
