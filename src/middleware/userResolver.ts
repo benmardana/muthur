@@ -7,6 +7,10 @@ const userResolver: Middleware<AnyMiddlewareArgs> = async ({
   context,
   next,
 }) => {
+  if ('subtype' in payload && payload.subtype === 'message_changed') {
+    return;
+  }
+
   assert('user' in payload);
 
   context.user = userService.findOrCreate(`<@${payload.user}>`);

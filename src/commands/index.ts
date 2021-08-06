@@ -10,4 +10,5 @@ export default commands
   .add([/^chess play(?:$|[\s]+(.*))$/, Chess.play])
   .add([/^chess (<@.*>) move(?:$|[\s]+(.*))$/, Chess.move])
   .add([/^chess (<@.*>) moves$/, Chess.moves])
-  .add([/^chess games$/, Chess.games]);
+  .add([/^chess games$/, Chess.games])
+  .add([/^chess (<@.*>) game$/, Chess.game]);

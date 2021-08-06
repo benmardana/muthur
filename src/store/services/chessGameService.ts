@@ -91,10 +91,6 @@ export const relativeScore = (game: ChessInstance) => {
     .map((piece) => piece.toLowerCase())
     .reduce((acc, curr) => acc + pieceValues[curr], 0);
 
-  console.log(
-    fen.filter((character) => character.match(/[a-z]/g)),
-    white
-  );
   const numberFormatter = new Intl.NumberFormat('en-US', {
     signDisplay: 'exceptZero',
   });

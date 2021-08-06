@@ -5,7 +5,7 @@ import chessGameService, {
   fenToGif,
   nextTurn,
   opposition,
-  sanToLan,
+  relativeScore,
 } from 'store/services/chessGameService';
 
 const tagRegex = /(<@.*>)/;
@@ -45,7 +45,9 @@ export default {
           `You already have a game with ${opposition(
             context.user.id,
             existingGame
-          )} - ${nextTurn(existingGame)} it's your turn!`
+          )} - ${nextTurn(existingGame)} it's your turn! Score: ${relativeScore(
+            existingGame.game
+          )}`
         );
         await say(
           fenToGif(existingGame.game.fen(), {
