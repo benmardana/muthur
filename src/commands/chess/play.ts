@@ -5,6 +5,7 @@ import chessGameService, {
   fenToGif,
   nextTurn,
   opposition,
+  sanToLan,
 } from 'store/services/chessGameService';
 
 const tagRegex = /(<@.*>)/;
@@ -46,7 +47,11 @@ export default {
             existingGame
           )} - ${nextTurn(existingGame)} it's your turn!`
         );
-        await say(fenToGif(existingGame.game.fen()));
+        await say(
+          fenToGif(existingGame.game.fen(), {
+            flipBoard: existingGame.game.turn() === 'b',
+          })
+        );
         return;
       }
 

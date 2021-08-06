@@ -57,8 +57,8 @@ export const nextTurn = (game: ChessGame) =>
 export const opposition = (currentUser: string, game: ChessGame) =>
   game.white === currentUser ? game.black : game.white;
 
-const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 export const squareInCheck = (game: ChessInstance) => {
+  const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   const gameBoard = game.board();
 
   for (let rank = 0; rank < gameBoard.length; rank++) {
@@ -69,6 +69,40 @@ export const squareInCheck = (game: ChessInstance) => {
       }
     }
   }
+};
+
+export const relativeScore = (game: ChessInstance) => {
+  const pieceValues: Record<string, number> = {
+    p: 1,
+    n: 3,
+    b: 3,
+    r: 5,
+    q: 9,
+    k: 0,
+  };
+
+  const fen = game.fen().split(' ')[0].split('');
+  const black = fen
+    .filter((character) => character.match(/[a-z]/g))
+    .reduce((acc, curr) => acc + pieceValues[curr], 0);
+
+  const white = fen
+    .filter((character) => character.match(/[A-Z]/g))
+    .map((piece) => piece.toLowerCase())
+    .reduce((acc, curr) => acc + pieceValues[curr], 0);
+
+  console.log(
+    fen.filter((character) => character.match(/[a-z]/g)),
+    white
+  );
+  const numberFormatter = new Intl.NumberFormat('en-US', {
+    signDisplay: 'exceptZero',
+  });
+
+  const whiteDiff = numberFormatter.format(white - black);
+  const blackDiff = numberFormatter.format(black - white);
+
+  return `White: ${whiteDiff}, Black: ${blackDiff}`;
 };
 
 const find = (id: string) => {

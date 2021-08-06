@@ -2,6 +2,7 @@ import chessGameService, {
   ChessGame,
   fenToGif,
   nextTurn,
+  relativeScore,
   sanToLan,
   squareInCheck,
 } from 'store/services/chessGameService';
@@ -76,7 +77,11 @@ export default {
           // check
           check = squareInCheck(game);
           chessGameService.update(existingGame.id, { gameFen: game.fen() });
-          await say(`Check - ${nextTurn(existingGame)} it's your turn!`);
+          await say(
+            `Check - ${nextTurn(
+              existingGame
+            )} it's your turn! Score: ${relativeScore(game)}`
+          );
           await say(
             fenToGif(game.fen(), {
               lastMove: sanToLan(result),
@@ -88,7 +93,9 @@ export default {
         }
 
         chessGameService.update(existingGame.id, { gameFen: game.fen() });
-        await say(`${nextTurn(existingGame)} your turn!`);
+        await say(
+          `${nextTurn(existingGame)} your turn! Score: ${relativeScore(game)}`
+        );
         await say(
           fenToGif(game.fen(), {
             lastMove: sanToLan(result),
