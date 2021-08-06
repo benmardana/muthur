@@ -2,7 +2,6 @@ import chessGameService, {
   ChessGame,
   fenToGif,
   nextTurn,
-  opposition,
   sanToLan,
   squareInCheck,
 } from 'store/services/chessGameService';

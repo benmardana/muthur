@@ -9,7 +9,10 @@ import { User } from 'store/services/userService';
 export type Pattern = string | RegExp;
 export type Message = SlackEventMiddlewareArgs<'message'> &
   AllMiddlewareArgs & {
-    context: Context & { matches?: string[]; user?: User & Realm.Object };
+    context: Context & {
+      matches?: string[];
+      user?: User & Realm.Object;
+    };
   };
 export type MessageHandler = Middleware<SlackEventMiddlewareArgs<'message'>>;
 

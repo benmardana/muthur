@@ -9,7 +9,6 @@ export default {
   handle: async ({ context, say }: Message) => {
     const command = context.matches?.[1];
 
-    console.log(context.user?.id);
     if (![adminSidekicker, adminTest].includes(context.user?.id ?? '')) {
       return;
     }

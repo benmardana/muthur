@@ -60,14 +60,11 @@ export const opposition = (currentUser: string, game: ChessGame) =>
 const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 export const squareInCheck = (game: ChessInstance) => {
   const gameBoard = game.board();
-  console.log(gameBoard);
 
   for (let rank = 0; rank < gameBoard.length; rank++) {
     for (let file = 0; file < gameBoard[rank].length; file++) {
-      console.log(rank, file, gameBoard[rank][file], game.turn());
       const square = gameBoard[rank][file];
       if (square && square.type === game.KING && square.color === game.turn()) {
-        console.log(`${files[file]}${8 - rank}`);
         return `${files[file]}${8 - rank}`;
       }
     }

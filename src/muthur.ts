@@ -1,9 +1,8 @@
 import { App } from '@slack/bolt';
 import 'dotenv/config.js';
 
-import commands from 'commands';
-import { register } from 'utils';
 import { userResolver } from 'middleware';
+import commands from './commands';
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -12,7 +11,9 @@ const app = new App({
 
 app.use(userResolver);
 
-commands.forEach(register(app));
+// commands.forEach(register(app));
+
+app.message(/.*/, commands);
 
 (async () => {
   await app.start(3000);
