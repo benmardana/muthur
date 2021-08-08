@@ -91,14 +91,16 @@ export const relativeScore = (game: ChessInstance) => {
     .map((piece) => piece.toLowerCase())
     .reduce((acc, curr) => acc + pieceValues[curr], 0);
 
-  const numberFormatter = new Intl.NumberFormat('en-US', {
-    signDisplay: 'exceptZero',
-  });
+  const whiteDiff = white - black;
+  const blackDiff = black - white;
 
-  const whiteDiff = numberFormatter.format(white - black);
-  const blackDiff = numberFormatter.format(black - white);
+  if (white === black) {
+    return 'White: 0, Black 0';
+  }
 
-  return `White: ${whiteDiff}, Black: ${blackDiff}`;
+  return whiteDiff > blackDiff
+    ? `White: +${whiteDiff}`
+    : `Black: +${blackDiff}`;
 };
 
 const find = (id: string) => {
@@ -137,7 +139,7 @@ const update = (
   let newInstance: (DBChessGame & Realm.Object) | undefined;
 
   realmInstance.write(() => {
-    realmInstance.create<DBChessGame>(
+    newInstance = realmInstance.create<DBChessGame>(
       'ChessGame',
       {
         id,
