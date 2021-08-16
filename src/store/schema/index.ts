@@ -20,3 +20,11 @@ export const User = {
   },
   primaryKey: 'id',
 };
+
+export const Photo = {
+  name: 'Photo',
+  properties: {
+    url: 'string',
+  },
+  primaryKey: 'url',
+};
