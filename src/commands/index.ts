@@ -1,7 +1,7 @@
 import commands from './commands';
 import Chess from './chess';
 import dev, { badBot, goodBot } from './dev';
-import cute from './emergency/cute';
+import cute, { custom } from './emergency/cute';
 
 export default commands
   .add([/^dev(?:$|[\s]+(.*))$/, dev])
@@ -13,4 +13,5 @@ export default commands
   .add([/^chess (<@.*>) moves$/, Chess.moves])
   .add([/^chess games$/, Chess.games])
   .add([/^chess (<@.*>) game$/, Chess.game])
-  .add([/^emergency cute$/, cute]);
+  .add([/^emergency cute$/, cute])
+  .add([/^emergency cute[\s]+(.*)$/, { handle: custom }]);

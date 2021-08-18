@@ -64,3 +64,36 @@ export default {
     );
   },
 };
+
+export const custom = async ({ say, context }: Message) => {
+  const thing = context.matches?.[1];
+
+  const result = await serverApi.search.getPhotos({
+    query: `cute ${thing}`,
+  });
+
+  const url = result.response?.results[getRandomInt(0, 9)].urls.regular;
+
+  if (url) {
+    const existingPhoto = realmInstance.objectForPrimaryKey('Photo', url);
+
+    if (!existingPhoto) {
+      realmInstance.write(() => {
+        realmInstance.create('Photo', {
+          url,
+        });
+      });
+    }
+
+    await say(`${url}#${shortUUID.generate()}`);
+    return;
+  }
+
+  const existingPhotos = realmInstance.objects<{ url: string }>('Photo');
+
+  await say(
+    `${
+      existingPhotos[getRandomInt(0, existingPhotos.length - 1)]?.url
+    }#${shortUUID.generate()}` ?? "No cute found '("
+  );
+};
